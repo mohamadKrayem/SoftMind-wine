@@ -1,0 +1,22 @@
+.home {
+  margin-left: 30px;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 20px;
+}
+
+.page-item {
+  list-style: none;
+  cursor: pointer;
+  padding: 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: all 0.25s;
+}
+
+
