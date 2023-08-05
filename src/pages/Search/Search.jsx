@@ -80,7 +80,7 @@ function Search() {
   async function fetchWine() {
     try{
       setLoading(true);
-      const data = await Promise.all(fetchData('/reds'), fetchData('/sparkling'), fetchData('/whites'), fetchData('/rose'));
+      const data = await Promise.all([fetchData('/reds'), fetchData('/sparkling'), fetchData('/whites'), fetchData('/rose')]);
       setWineFile([...data[0], ...data[1], ...data[2]]);
     }catch(error) {
       toast.error("Something went wrong !!!!");
