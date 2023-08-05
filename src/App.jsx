@@ -24,11 +24,11 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route element={<Layout />}> 
               <Route path="/profile" element={<Profile />} />
-              <Route path="/" element={<Home header={"Reds"} />} />
-              <Route path="/whites" element={<Home header={"Whites"}/>} />
-              <Route path="/reds" element={<Home header={"Reds"}/>} />
-              <Route path="/sparkling" element={<Home header={"Sparkling"} />} />
-              <Route path="/rose" element={<Home header={"Rose"}/>} />
+              <Route path="/" element={<Home header={"Reds"} end={"/reds"} />} />
+              <Route path="/whites" element={<Home header={"Whites"}/>} end={"/whites"} />
+              <Route path="/reds" element={<Home header={"Reds"}/>} end={"/reds"} />
+              <Route path="/sparkling" element={<Home header={"Sparkling"} />} end={"/sparkling"} />
+              <Route path="/rose" element={<Home header={"Rose"}/>} end={"/rose"} />
               <Route path="/search" element={<Search />} />
             </Route>
           </Route>

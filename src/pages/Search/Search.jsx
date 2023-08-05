@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Form } from 'react-bootstrap';
-import WineFile from '../../WineFile';
+//import WineFile from '../../WineFile';
 import { useSearchParams } from "react-router-dom";
 import Cards from '../Cards/Cards';
 import Pagination from 'react-bootstrap/Pagination';
 import './Search.scss';
 import useSize from '../../hooks/useSize';
-
+import { toast } from "react-toastify";
+import fetchData from '../../api/index.js'
 
 function Search() {
+    const [WineFile, setWineFile] = useState([]);
+    const [result, setResult] = useState(false);
+    const [err, setErr] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [queryParams, setQueryParams] = useSearchParams();
     const [waiting, setWaiting] = useState(false);
@@ -32,6 +37,7 @@ function Search() {
     };
 
     useEffect(() => {
+        if(!result) return;
         const timer = setTimeout(() => {
             if (queryStrings.q !== "") {
                 // if (queryStrings.page !== "" && setClickedPage) {
@@ -48,6 +54,7 @@ function Search() {
     }, [queryStrings.q]);
 
     useEffect(() => {
+        if(!result) return;
         if (queryStrings.page !== "" && clickedPage) {
             setQueryParams(queryStrings);
             setClickedPageState(false);
@@ -55,7 +62,10 @@ function Search() {
     }, [queryStrings.page, clickedPage])
 
     useEffect(() => {
-        if (queryParams.get("page") !== null) {
+        if(!result) {
+          fetchWine();
+        }
+    else if (queryParams.get("page") !== null) {
             setCurrentPage(parseInt(queryParams.get("page")));
             let _query_strings = {
                 page: parseInt(queryParams.get("page")),
@@ -67,7 +77,21 @@ function Search() {
         }
     }, [])
 
+  async function fetchWine() {
+    try{
+      setLoading(true);
+      const data = await Promise.all(fetchData('/reds'), fetchData('/sparkling'), fetchData('/whites'), fetchData('/rose'));
+      setWineFile([...data[0], ...data[1], ...data[2]]);
+    }catch(error) {
+      toast.error("Something went wrong !!!!");
+      setErr(true);
+    }finally {
+      setLoading(false);
+      setResult(true);
+    }
+  }  
     useEffect(() => {
+    if(!result) return;
         if (queryParams.get("q") === "null") {
             console.log("nulll")
             return setCards([]);
@@ -104,10 +128,11 @@ function Search() {
 
     const size = useSize();
 
+  function displayData() {
     return (
-        <div className='search-container'>
-            <h1 style={{ marginBottom: '20px' }}>Search</h1>
+    <>
             <Form.Control style={{marginBottom: '40px', height:"30px", padding: "5px 7px", width: size.width>500? '20rem':'13rem'}} type="text" placeholder="Search" onChange={handleChange} />
+            
             <div>
                 <Cards WineFile={cards} indexOfFirstWine={indexOfFirstWine} indexOfLastWine={indexOfLastWine} />
                 <Pagination size='sm' className='pagination'>
@@ -118,6 +143,25 @@ function Search() {
                     }
                 </Pagination>
             </div>
+            </>
+    )
+  }
+
+  const displayLoading = () => <h2>Loading... </h2>
+  
+  const displayError = () => <h2>Something went wrong !!!</h2>
+
+  function displayResult(loading, err) {
+    if(loading) return displayLoading();
+    else if(err) return displayError();
+    return displayData();
+  }
+    return (
+        <div className='search-container'>
+            <h1 style={{ marginBottom: '20px' }}>Search</h1>
+            {
+            displayResult(loading, err)
+            }
         </div>
     )
 }
